@@ -9,13 +9,8 @@ import br.unifesp.henrique.john.research.systematic.review.assertion.articles.Ar
 import com.google.common.collect.Maps;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -108,20 +103,21 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
      * @throws Exception
      */
     public abstract void commonWordsAtTitleForSearchWithoutParameters() throws Exception ;
-    public void commonWordsAtTitleForSearchWithoutParameters(int limitResult) throws Exception {
+    public HashMap commonWordsAtTitleForSearchWithoutParameters(int limitResult) throws Exception {
         ArrayList<Article> differentArticlesFromGeneralSearch = separateArticlesExclusiveForSearchWithoutParameters();
 
         List<String> titles = articlesDescriptionProcessor.getPropertyStringList(differentArticlesFromGeneralSearch, Article::getTitle);
         Map<String, Long> namesOccurrences = processor.splitAndCountWordsOccurrences(titles," ",true, true);
         final HashMap rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), limitResult);
         System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
     }
 
     /**
      * Quais autores são mais frequentes, nos resultados exclusidos, da busca geral?
      */
     public abstract void statisticsFromAuthorsForSearchWithoutParameters() ;
-    public void statisticsFromAuthorsForSearchWithoutParameters(int limitResult) {
+    public HashMap statisticsFromAuthorsForSearchWithoutParameters(int limitResult) {
         ArrayList<Article> differentArticlesFromGeneralSearch = separateArticlesExclusiveForSearchWithoutParameters();
 
         List<String> authors = articlesDescriptionProcessor.getPropertyStringList(differentArticlesFromGeneralSearch, Article::getAuthors);
@@ -129,6 +125,7 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
         final HashMap rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), limitResult);
 
         System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
     }
 
     /**
@@ -154,19 +151,20 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
      * @throws Exception
      */
     public abstract void commonWordsAtTitleForSearchFilteredByYear() throws Exception ;
-    public void commonWordsAtTitleForSearchFilteredByYear(int limitResult) throws Exception {
+    public HashMap commonWordsAtTitleForSearchFilteredByYear(int limitResult) throws Exception {
         ArrayList<Article> differentArticlesForSearchFilteredByYear = separateArticlesExclusiveForSearchFilteredByYear();
         List<String> titles = articlesDescriptionProcessor.getPropertyStringList(differentArticlesForSearchFilteredByYear, Article::getTitle);
         Map<String, Long> namesOccurrences = processor.splitAndCountWordsOccurrences(titles," ",true, true);
         final HashMap rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), limitResult);
         System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
     }
 
     /**
      * Quais autores são mais frequentes, nos resultados exclusidos, da busca parametrizada por ano?
      */
     public abstract void statisticsFromAuthorsForSearchFilteredByYear() ;
-    public void statisticsFromAuthorsForSearchFilteredByYear(int limitResult) {
+    public HashMap statisticsFromAuthorsForSearchFilteredByYear(int limitResult) {
         ArrayList<Article> differentArticlesForSearchFilteredByYear = separateArticlesExclusiveForSearchFilteredByYear();
 
         List<String> authors = articlesDescriptionProcessor.getPropertyStringList(differentArticlesForSearchFilteredByYear, Article::getAuthors);
@@ -174,26 +172,26 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
         final HashMap rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), limitResult);
 
         System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
     }
 
-//FIXME
-    //@Test
-//    public void statisticsFromYear() {
-//        ArticleSearchTemplateObject searchTemplateObject = new ArticleSearchTemplateObject().withAuthors().withTitle().withYear();
-//        List<Article> articleList = csvdao.loadArticlesFromCSV(getGeneralPathFile(), searchTemplateObject);
-//        ArticlesAssertion.assertThese(articleList).hasQtt(631);
-//        List<String> years = articlesDescriptionProcessor.getPropertyStringList(articleList, Article::getYear);
-//        Map<String, Long> namesOccurrences = processor.countWordsOccurrences(years,false,false);
-//        Map<String, Long> rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), 20);
-//
-//        SortedMap<String, Long> sortedMap = Maps.newTreeMap();
-//        for (String key :
-//                rankedPropertyMap.keySet()) {
-//            sortedMap.put(key,rankedPropertyMap.get(key));
-//        }
-//        System.out.println(sortedMap);
-////        BarChartGenerator chartGenerator = articlesDescriptionProcessor.getBarChartGeneratorForPropertyFrequency("Years with more publications", "Years", sortedMap);
-////        chartGenerator.show();
-//        //o crescimento a partir de 2010 pode ser devido a diminuição do custo da tecnologia
-//    }
+    public abstract void statisticsFromYear();
+    public SortedMap<String, Long> statisticsFromYear(int expectedQuantity, int limitResult) {
+        ArticleSearchTemplateObject searchTemplateObject = new ArticleSearchTemplateObject().withAuthors().withTitle().withYear();
+        List<Article> articleList = csvdao.loadArticlesFromCSV(getGeneralPathFile(), searchTemplateObject);
+        ArticlesAssertion.assertThese(articleList).hasQtt(expectedQuantity);
+
+        List<String> years = articlesDescriptionProcessor.getPropertyStringList(articleList, Article::getYear);
+        Map<String, Long> namesOccurrences = processor.countWordsOccurrences(years,false,false);
+        Map<String, Long> rankedPropertyMap = articlesDescriptionProcessor.getRankedPropertyMap(namesOccurrences.entrySet().stream(), limitResult);
+
+        SortedMap<String, Long> sortedMap = Maps.newTreeMap();
+        for (String key :
+                rankedPropertyMap.keySet()) {
+            sortedMap.put(key,rankedPropertyMap.get(key));
+        }
+        System.out.println(sortedMap);
+        return sortedMap;
+        //o crescimento a partir de 2010 pode ser devido a diminuição do custo da tecnologia
+    }
 }
