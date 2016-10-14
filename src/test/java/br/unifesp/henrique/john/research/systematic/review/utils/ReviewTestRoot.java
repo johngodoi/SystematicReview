@@ -7,6 +7,7 @@ import br.unifesp.henrique.john.research.systematic.review.articles.ArticlesCSVD
 import br.unifesp.henrique.john.research.systematic.review.articles.ArticlesDescriptionProcessor;
 import br.unifesp.henrique.john.research.systematic.review.assertion.articles.ArticlesAssertion;
 import com.google.common.collect.Maps;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 
@@ -21,7 +22,9 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     protected ArticlesDescriptionProcessor articlesDescriptionProcessor;
     protected WordProcessor processor;
     protected ArticlesCSVDAO csvdao;
-    
+    protected List<Article> articlesToWrite;
+    protected String articlesToWritePath;
+
     public abstract String getGeneralResearchPathFile();
     public abstract String getJustRecentResearchPathFile();
 
@@ -30,6 +33,14 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
         processor = getWordProcessor();
         csvdao = getArticlesCSVDAO();
         articlesDescriptionProcessor = getArticlesDescriptionProcessor();
+        articlesToWrite = new ArrayList<>();
+        articlesToWritePath = "./src/test/article_results.csv";
+    }
+
+    @After
+    public void finalize() throws Exception {
+        if(articlesToWrite.isEmpty()) return;
+        csvdao.writeToCSV(articlesToWritePath,articlesToWrite);;
     }
 
     @Override

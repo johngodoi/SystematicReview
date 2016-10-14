@@ -3,7 +3,9 @@ package br.unifesp.henrique.john.research.systematic.review.articles;
 import com.google.common.collect.Lists;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -99,5 +101,11 @@ public class ArticlesCSVDAO {
             }
         }
         return containsString;
+    }
+
+    public boolean writeToCSV(String articlesToWritePath, List<Article> articlesToWrite) {
+        //TODO
+        throw new NotImplementedException();
+        //return true;
     }
 }
