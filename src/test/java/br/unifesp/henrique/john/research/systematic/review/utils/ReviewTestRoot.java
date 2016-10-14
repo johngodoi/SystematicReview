@@ -22,8 +22,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     protected WordProcessor processor;
     protected ArticlesCSVDAO csvdao;
     
-    public abstract String getGeneralPathFile();
-    public abstract String getResearchFrom2012PathFile();
+    public abstract String getGeneralResearchPathFile();
+    public abstract String getJustRecentResearchPathFile();
 
     @Before
     public void setUp() throws Exception {
@@ -50,8 +50,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     private ArrayList<Article> separateArticlesExclusiveForSearchFilteredByYear() {
         ArticleSearchTemplateObject articleSearchTemplateObject = new ArticleSearchTemplateObject().withAuthors()
                 .withTitle();
-        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralPathFile(), articleSearchTemplateObject);
-        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getResearchFrom2012PathFile(), articleSearchTemplateObject);
+        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), articleSearchTemplateObject);
+        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getJustRecentResearchPathFile(), articleSearchTemplateObject);
         return articles_2012.stream().filter(a -> !articles.contains(a)).collect(Collectors.toCollection(ArrayList::new));
     }
 
@@ -59,8 +59,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     private ArrayList<Article> separateArticlesExclusiveForSearchWithoutParameters() {
         ArticleSearchTemplateObject articleSearchTemplateObject = new ArticleSearchTemplateObject().withAuthors()
                 .withTitle();
-        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralPathFile(), articleSearchTemplateObject);
-        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getResearchFrom2012PathFile(), articleSearchTemplateObject);
+        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), articleSearchTemplateObject);
+        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getJustRecentResearchPathFile(), articleSearchTemplateObject);
         return articles.stream().filter(a -> !articles_2012.contains(a)).collect(Collectors.toCollection(ArrayList::new));
     }
     /**
@@ -72,8 +72,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     public void commonsFromSearchWithOrWithoutYear(int expectedQuantityOfArticles) throws Exception {
         ArticleSearchTemplateObject articleSearchTemplateObject = new ArticleSearchTemplateObject().withAuthors()
                 .withTitle().withYear().withSource().withPublisher().withCiteQuantity().withGSRank().withArticleURL();
-        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralPathFile(), articleSearchTemplateObject);
-        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getResearchFrom2012PathFile(), articleSearchTemplateObject);
+        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), articleSearchTemplateObject);
+        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getJustRecentResearchPathFile(), articleSearchTemplateObject);
 
         ArrayList<Article> commons = articles.stream().filter(a ->  articles_2012.contains(a)).collect(Collectors.toCollection(ArrayList::new));
         Assert.assertEquals("",expectedQuantityOfArticles,commons.size());
@@ -88,8 +88,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     public void differenceForSearchWithoutParameters(int expectedQuantityOfArticles) throws Exception {
         ArticleSearchTemplateObject articleSearchTemplateObject = new ArticleSearchTemplateObject().withAuthors()
                 .withTitle().withYear().withSource().withPublisher().withCiteQuantity().withGSRank().withArticleURL();
-        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralPathFile(), articleSearchTemplateObject);
-        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getResearchFrom2012PathFile(), articleSearchTemplateObject);
+        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), articleSearchTemplateObject);
+        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getJustRecentResearchPathFile(), articleSearchTemplateObject);
         ArrayList<Article> differentArticlesFromGeneralSearch = articles.stream().filter(a -> !articles_2012.contains(a)).collect(Collectors.toCollection(ArrayList::new));
 
         Assert.assertFalse("",articles.containsAll(articles_2012));
@@ -136,8 +136,8 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     public void differenceForSearchFilteredByYear(int expectedQuantityOfArticles) throws Exception {
         ArticleSearchTemplateObject articleSearchTemplateObject = new ArticleSearchTemplateObject().withAuthors()
                 .withTitle().withYear().withSource().withPublisher().withCiteQuantity().withGSRank().withArticleURL();
-        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralPathFile(), articleSearchTemplateObject);
-        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getResearchFrom2012PathFile(), articleSearchTemplateObject);
+        List<Article> articles = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), articleSearchTemplateObject);
+        List<Article> articles_2012 = csvdao.loadArticlesFromCSV(getJustRecentResearchPathFile(), articleSearchTemplateObject);
 
         Assert.assertFalse("",articles_2012.containsAll(articles));
         System.out.println("Different Articles From Search Filtered by Year");
@@ -178,7 +178,7 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
     public abstract void statisticsFromYear();
     public SortedMap<String, Long> statisticsFromYear(int expectedQuantity, int limitResult) {
         ArticleSearchTemplateObject searchTemplateObject = new ArticleSearchTemplateObject().withAuthors().withTitle().withYear();
-        List<Article> articleList = csvdao.loadArticlesFromCSV(getGeneralPathFile(), searchTemplateObject);
+        List<Article> articleList = csvdao.loadArticlesFromCSV(getGeneralResearchPathFile(), searchTemplateObject);
         ArticlesAssertion.assertThese(articleList).hasQtt(expectedQuantity);
 
         List<String> years = articlesDescriptionProcessor.getPropertyStringList(articleList, Article::getYear);
