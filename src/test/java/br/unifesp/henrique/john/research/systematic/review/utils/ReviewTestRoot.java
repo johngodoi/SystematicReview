@@ -205,4 +205,35 @@ public abstract class ReviewTestRoot implements ReviewTestRootDependencies {
         return sortedMap;
         //o crescimento a partir de 2010 pode ser devido a diminuição do custo da tecnologia
     }
+
+    public abstract void statisticsFromPublishers();
+    public HashMap statisticsFromPublishers(int limit) {
+        ArticleSearchTemplateObject searchTemplateObject = new ArticleSearchTemplateObject().withAuthors().withTitle().withPublisher().withSource();
+        List<Article> articles = csvdao.loadArticlesFromCSV(this.getGeneralResearchPathFile(), searchTemplateObject);
+
+        List<String> publisherList = this.articlesDescriptionProcessor.getPropertyStringList(articles, Article::getPublisher);
+        Map<String, Long> publisherOcurrences = this.processor.countWordsOccurrences(publisherList, true, false);
+
+        HashMap rankedPropertyMap = this.articlesDescriptionProcessor.getRankedPropertyMap(publisherOcurrences.entrySet().stream(), 15);
+
+        System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
+    }
+
+
+
+    public abstract void statisticsFromSources();
+    public HashMap statisticsFromSources(int limit) {
+        ArticleSearchTemplateObject searchTemplateObject = new ArticleSearchTemplateObject().withAuthors().withTitle().withPublisher().withSource();
+        List<Article> articles = csvdao.loadArticlesFromCSV(this.getGeneralResearchPathFile(), searchTemplateObject);
+
+
+        List<String> sourceList = this.articlesDescriptionProcessor.getPropertyStringList(articles, Article::getSource);
+        Map<String, Long> sourceOccurrences = this.processor.countWordsOccurrences(sourceList, true, false);
+
+        HashMap rankedPropertyMap = this.articlesDescriptionProcessor.getRankedPropertyMap(sourceOccurrences.entrySet().stream(), 15);
+
+        System.out.println(rankedPropertyMap);
+        return rankedPropertyMap;
+    }
 }
